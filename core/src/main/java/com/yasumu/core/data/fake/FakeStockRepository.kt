@@ -3,11 +3,16 @@ package com.yasumu.core.data.fake
 import com.yasumu.core.domain.model.Stock
 import com.yasumu.core.domain.model.StockId
 import com.yasumu.core.domain.repository.StockRepository
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import java.time.LocalDate
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.plus
 
 class FakeStockRepository : StockRepository {
 
@@ -36,13 +41,17 @@ class FakeStockRepository : StockRepository {
     }
 
     private fun initialStocks(): List<Stock> {
-        val today = LocalDate.now()
+        val today: LocalDate =
+            Clock.System.now()
+                .toLocalDateTime(TimeZone.currentSystemDefault())
+                .date
+
         return listOf(
             Stock(
                 id = StockId(1),
                 name = "冷凍からあげ",
                 quantity = 2,
-                bestBeforeDate = today.plusDays(7),
+                bestBeforeDate = today + DatePeriod(days = 7),
                 categoryId = null,
                 locationId = null,
             ),
@@ -50,7 +59,7 @@ class FakeStockRepository : StockRepository {
                 id = StockId(2),
                 name = "ごはんパック",
                 quantity = 5,
-                bestBeforeDate = today.plusDays(30),
+                bestBeforeDate = today + DatePeriod(days = 30),
                 categoryId = null,
                 locationId = null,
             ),
@@ -58,7 +67,7 @@ class FakeStockRepository : StockRepository {
                 id = StockId(3),
                 name = "冷凍ほうれん草",
                 quantity = 1,
-                bestBeforeDate = today.plusDays(14),
+                bestBeforeDate = today + DatePeriod(days = 14),
                 categoryId = null,
                 locationId = null,
             ),
