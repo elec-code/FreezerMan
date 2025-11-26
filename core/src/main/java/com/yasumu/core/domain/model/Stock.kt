@@ -1,7 +1,5 @@
 package com.yasumu.core.domain.model
 
-import java.time.LocalDate
-
 @JvmInline
 value class StockId(val value: Long)
 
@@ -18,7 +16,7 @@ data class Stock(
     val id: StockId,
     val name: String,
     val quantity: Int,
-    val bestBeforeDate: LocalDate,
+    val bestBeforeDate: kotlinx.datetime.LocalDate,
     val categoryId: CategoryId?,
     val locationId: LocationId?,
 )
