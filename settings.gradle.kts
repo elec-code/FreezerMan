@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "FreezerMan"
 include(":app")
- 
+include(":core")
+include(":feature")
