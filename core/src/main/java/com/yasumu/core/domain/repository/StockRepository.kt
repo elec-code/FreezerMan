@@ -1,7 +1,7 @@
-package com.yasumu.freezerman.core.domain.repository
+package com.yasumu.core.domain.repository
 
-import com.yasumu.freezerman.core.domain.model.Stock
-import com.yasumu.freezerman.core.domain.model.StockId
+import com.yasumu.core.domain.model.Stock
+import com.yasumu.core.domain.model.StockId
 import kotlinx.coroutines.flow.Flow
 
 /**

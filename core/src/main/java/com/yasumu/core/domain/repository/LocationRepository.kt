@@ -1,7 +1,7 @@
-package com.yasumu.freezerman.core.domain.repository
+package com.yasumu.core.domain.repository
 
-import com.yasumu.freezerman.core.domain.model.Location
-import com.yasumu.freezerman.core.domain.model.LocationId
+import com.yasumu.core.domain.model.Location
+import com.yasumu.core.domain.model.LocationId
 import kotlinx.coroutines.flow.Flow
 
 interface LocationRepository {

@@ -1,4 +1,4 @@
-package com.yasumu.freezerman.core.domain.model
+package com.yasumu.core.domain.model
 
 @JvmInline
 value class LocationOrder(val value: Int)

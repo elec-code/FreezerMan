@@ -1,7 +1,7 @@
-package com.yasumu.freezerman.core.domain.repository
+package com.yasumu.core.domain.repository
 
-import com.yasumu.freezerman.core.domain.model.Category
-import com.yasumu.freezerman.core.domain.model.CategoryId
+import com.yasumu.core.domain.model.Category
+import com.yasumu.core.domain.model.CategoryId
 import kotlinx.coroutines.flow.Flow
 
 interface CategoryRepository {

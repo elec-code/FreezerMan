@@ -1,7 +1,7 @@
-package com.yasumu.freezerman.core.domain.usecase
+package com.yasumu.core.domain.usecase
 
-import com.yasumu.freezerman.core.domain.model.Stock
-import com.yasumu.freezerman.core.domain.repository.StockRepository
+import com.yasumu.core.domain.model.Stock
+import com.yasumu.core.domain.repository.StockRepository
 import kotlinx.coroutines.flow.Flow
 
 /**
