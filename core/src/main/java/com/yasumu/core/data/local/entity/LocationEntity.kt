@@ -10,15 +10,13 @@ import androidx.room.PrimaryKey
  *   Location(
  *     id: LocationId,
  *     name: String,
+ *     order: LocationOrder,
  *   )
- *
- * ※ 並び順（ソート順）を Location 側に持たせるなら、
- *   将来的に sortOrder: Int などをここに追加して、
- *   Domain の Location にもフィールドを足す形が自然。
  */
 @Entity(tableName = "locations")
 data class LocationEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
     val name: String,
+    val sortOrder: Int,
 )
