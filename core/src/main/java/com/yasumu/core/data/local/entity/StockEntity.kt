@@ -2,6 +2,8 @@ package com.yasumu.core.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 
 /**
  * Room 用の在庫エンティティ
@@ -18,7 +20,7 @@ import androidx.room.PrimaryKey
  *     locationId: LocationId?,
  *   )
  *
- * Date/Time 型は TypeConverter で変換する前提で Long に落として保持する。
+ * Date/Time 型は TypeConverter で Long に変換され、DB には INTEGER として保存される。
  */
 @Entity(tableName = "stocks")
 data class StockEntity(
@@ -28,14 +30,12 @@ data class StockEntity(
     val name: String,
     val quantity: Int,
 
-    // LocalDate(bestBeforeDate) -> Long(epochDay)
-    val bestBeforeDateEpochDay: Long,
+    // LocalDate -> INTEGER (epochDay)
+    val bestBeforeDate: LocalDate,
+    val cookedDate: LocalDate,
 
-    // LocalDate(cookedDate) -> Long(epochDay)
-    val cookedDateEpochDay: Long,
-
-    // Instant(registeredAt) -> Long(epochMillis)
-    val registeredAtEpochMillis: Long,
+    // Instant -> INTEGER (epochMillis)
+    val registeredAt: Instant,
 
     // CategoryId? / LocationId? の実体
     val categoryId: Long?,
