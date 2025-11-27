@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface LocationDao {
 
-    @Query("SELECT * FROM locations ORDER BY id ASC")
+    @Query("SELECT * FROM locations ORDER BY sortOrder ASC, id ASC")
     fun getAllLocations(): Flow<List<LocationEntity>>
 
     @Query("SELECT * FROM locations WHERE id = :id LIMIT 1")
