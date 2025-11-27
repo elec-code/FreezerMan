@@ -3,16 +3,16 @@ package com.yasumu.core.data.fake
 import com.yasumu.core.domain.model.Stock
 import com.yasumu.core.domain.model.StockId
 import com.yasumu.core.domain.repository.StockRepository
-import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 
 class FakeStockRepository : StockRepository {
 
@@ -27,8 +27,10 @@ class FakeStockRepository : StockRepository {
         stocksFlow.update { current ->
             val index = current.indexOfFirst { it.id == stock.id }
             if (index == -1) {
+                // 新規追加：呼び出し側で registeredAt を確定して渡している前提
                 current + stock
             } else {
+                // 更新：registeredAt は呼び出し側で維持している前提（Fake では触らない）
                 current.toMutableList().also { it[index] = stock }
             }
         }
@@ -41,9 +43,9 @@ class FakeStockRepository : StockRepository {
     }
 
     private fun initialStocks(): List<Stock> {
+        val now = Clock.System.now()
         val today: LocalDate =
-            Clock.System.now()
-                .toLocalDateTime(TimeZone.currentSystemDefault())
+            now.toLocalDateTime(TimeZone.currentSystemDefault())
                 .date
 
         return listOf(
@@ -52,6 +54,8 @@ class FakeStockRepository : StockRepository {
                 name = "冷凍からあげ",
                 quantity = 2,
                 bestBeforeDate = today + DatePeriod(days = 7),
+                cookedDate = today,
+                registeredAt = now,
                 categoryId = null,
                 locationId = null,
             ),
@@ -60,6 +64,8 @@ class FakeStockRepository : StockRepository {
                 name = "ごはんパック",
                 quantity = 5,
                 bestBeforeDate = today + DatePeriod(days = 30),
+                cookedDate = today,
+                registeredAt = now,
                 categoryId = null,
                 locationId = null,
             ),
@@ -68,6 +74,8 @@ class FakeStockRepository : StockRepository {
                 name = "冷凍ほうれん草",
                 quantity = 1,
                 bestBeforeDate = today + DatePeriod(days = 14),
+                cookedDate = today,
+                registeredAt = now,
                 categoryId = null,
                 locationId = null,
             ),
