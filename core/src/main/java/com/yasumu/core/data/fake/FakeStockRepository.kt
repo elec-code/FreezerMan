@@ -18,22 +18,40 @@ class FakeStockRepository : StockRepository {
 
     private val stocksFlow = MutableStateFlow(initialStocks())
 
+    /**
+     * メモリ上で使う ID 採番用カウンタ。
+     * - 初期データの最大 ID + 1 からスタートする。
+     */
+    private var nextId: Long =
+        (stocksFlow.value.maxOfOrNull { it.id.value } ?: 0L) + 1L
+
     override fun getAllStocks(): Flow<List<Stock>> = stocksFlow.asStateFlow()
 
     override suspend fun getStockById(id: StockId): Stock? =
         stocksFlow.value.firstOrNull { it.id == id }
 
-    override suspend fun upsertStock(stock: Stock) {
+    override suspend fun upsertStock(stock: Stock): Stock {
+        var result: Stock = stock
+
         stocksFlow.update { current ->
-            val index = current.indexOfFirst { it.id == stock.id }
-            if (index == -1) {
-                // 新規追加：呼び出し側で registeredAt を確定して渡している前提
-                current + stock
+            if (stock.id.value == 0L) {
+                // 新規: この場で ID を採番して追加
+                val newStock = stock.copy(id = StockId(nextId++))
+                result = newStock
+                current + newStock
             } else {
-                // 更新：registeredAt は呼び出し側で維持している前提（Fake では触らない）
-                current.toMutableList().also { it[index] = stock }
+                // 更新: 既存 ID を持つ要素を差し替え
+                val index = current.indexOfFirst { it.id == stock.id }
+                if (index == -1) {
+                    // 万一見つからなければ「新規として追加」
+                    current + stock
+                } else {
+                    current.toMutableList().also { it[index] = stock }
+                }
             }
         }
+
+        return result
     }
 
     override suspend fun deleteStock(id: StockId) {
@@ -44,9 +62,7 @@ class FakeStockRepository : StockRepository {
 
     private fun initialStocks(): List<Stock> {
         val now = Clock.System.now()
-        val today: LocalDate =
-            now.toLocalDateTime(TimeZone.currentSystemDefault())
-                .date
+        val today: LocalDate = now.toLocalDateTime(TimeZone.currentSystemDefault()).date
 
         return listOf(
             Stock(
@@ -61,9 +77,9 @@ class FakeStockRepository : StockRepository {
             ),
             Stock(
                 id = StockId(2),
-                name = "ごはんパック",
-                quantity = 5,
-                bestBeforeDate = today + DatePeriod(days = 30),
+                name = "冷凍ハンバーグ",
+                quantity = 3,
+                bestBeforeDate = today + DatePeriod(days = 10),
                 cookedDate = today,
                 registeredAt = now,
                 categoryId = null,
