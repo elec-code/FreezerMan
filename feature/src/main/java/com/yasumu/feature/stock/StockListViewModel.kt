@@ -3,8 +3,8 @@ package com.yasumu.feature.stock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.yasumu.core.data.fake.FakeStockRepository
 import com.yasumu.core.domain.model.Stock
+import com.yasumu.core.domain.repository.StockRepository
 import com.yasumu.core.domain.usecase.GetStockListUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,14 +40,15 @@ class StockListViewModel(
     }
 }
 
-/**
- * 今は Hilt を使わず、Factory で Fake を差し込む。
- * 後で Room 実装に差し替えるときはここを書き換えればよい。
+/*
+* Repository注入用Factory
  */
-class StockListViewModelFactory : ViewModelProvider.Factory {
+class StockListViewModelFactory(
+    private val stockRepository: StockRepository,
+) : ViewModelProvider.Factory {
+
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        val repository = FakeStockRepository()
-        val useCase = GetStockListUseCase(repository)
+        val useCase = GetStockListUseCase(stockRepository)
         @Suppress("UNCHECKED_CAST")
         return StockListViewModel(useCase) as T
     }

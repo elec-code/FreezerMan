@@ -4,40 +4,27 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.yasumu.feature.stock.StockListRoute
 import com.yasumu.freezerman.ui.theme.FreezerManTheme
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val appContainer = (application as FreezerManApplication).appContainer
         enableEdgeToEdge()
         setContent {
-            FreezerManTheme {
-                StockListRoute()
-            }
+            FreezerManApp(appContainer)
         }
     }
 }
-
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
+private fun FreezerManApp(appContainer: AppContainer) {
     FreezerManTheme {
-        Greeting("Android")
+        Surface {
+            StockListRoute(
+                stockRepository = appContainer.stockRepository,
+            )
+        }
     }
 }
