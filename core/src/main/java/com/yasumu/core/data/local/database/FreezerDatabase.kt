@@ -2,6 +2,7 @@ package com.yasumu.core.data.local.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.yasumu.core.data.local.dao.CategoryDao
 import com.yasumu.core.data.local.dao.LocationDao
 import com.yasumu.core.data.local.dao.StockDao
@@ -17,6 +18,9 @@ import com.yasumu.core.data.local.entity.StockEntity
     ],
     version = 1,
     exportSchema = true,
+)
+@TypeConverters(
+    KotlinxDateTimeConverters::class,
 )
 abstract class FreezerDatabase : RoomDatabase() {
 
