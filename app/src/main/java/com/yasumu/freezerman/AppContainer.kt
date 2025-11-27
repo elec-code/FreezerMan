@@ -5,20 +5,27 @@ import androidx.room.Room
 import com.yasumu.core.data.local.database.FreezerDatabase
 import com.yasumu.core.data.local.repository.StockRepositoryImpl
 import com.yasumu.core.domain.repository.StockRepository
-
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 class AppContainer(context: Context) {
 
-    private val database: FreezerDatabase by lazy {
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    private val database: FreezerDatabase =
         Room.databaseBuilder(
             context.applicationContext,
             FreezerDatabase::class.java,
             "freezer_database",
         ).build()
-    }
 
-    val stockRepository: StockRepository by lazy {
-        StockRepositoryImpl(
-            stockDao = database.stockDao(),
-        )
-    }
-}
+    val stockRepository: StockRepository =
+        StockRepositoryImpl(database.stockDao())
+
+    /** 起動時に呼んで、必要ならサンプルデータを追加する */
+    fun seedIfNeeded() {
+        applicationScope.launch {
+            seedStocksIfEmpty(stockRepository)
+        }
+    }}
