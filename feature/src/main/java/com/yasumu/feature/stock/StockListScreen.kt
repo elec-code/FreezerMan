@@ -23,10 +23,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.yasumu.core.domain.repository.StockRepository
 
 @Composable
 fun StockListRoute(
-    viewModel: StockListViewModel = viewModel(factory = StockListViewModelFactory()),
+    stockRepository: StockRepository,
+    viewModel: StockListViewModel = viewModel(
+        factory = StockListViewModelFactory(stockRepository),
+    ),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     StockListScreen(uiState = uiState)
