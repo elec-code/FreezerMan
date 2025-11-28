@@ -21,6 +21,8 @@ class CategoryEditViewModel(
     private val _uiState = MutableStateFlow(CategoryEditUiState())
     val uiState: StateFlow<CategoryEditUiState> = _uiState
 
+    private var hasStartedCollecting = false
+
     fun onAction(action: CategoryEditUiAction) {
         when (action) {
             is CategoryEditUiAction.OnAppear -> onAppear()
@@ -39,11 +41,34 @@ class CategoryEditViewModel(
     }
 
     private fun onAppear() {
+        if (hasStartedCollecting) return
+        hasStartedCollecting = true
+
         viewModelScope.launch {
-            // GetCategoriesUseCase の collect で uiState.categories を更新
-            // 実装は 2-B 以降
+            // 初回は isLoading = true のまま Flow を購読
+            getCategoriesUseCase().collect { categories ->
+                val items = mapToItemUiStateList(categories)
+
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    categories = items,
+                    showEmptyMessage = items.isEmpty(),
+                )
+            }
         }
     }
+
+    private fun mapToItemUiStateList(
+        categories: List<com.yasumu.core.domain.category.Category>,
+    ): List<CategoryItemUiState> =
+        categories.map { category ->
+            CategoryItemUiState(
+                id = category.id,
+                name = category.name,
+                // isDragging は並び替え UI 実装時に更新するので、ここでは常に false
+                isDragging = false,
+            )
+        }
 
     private fun onAddClick() { /* ... */ }
     private fun onEditClick(categoryId: CategoryId) { /* ... */ }
