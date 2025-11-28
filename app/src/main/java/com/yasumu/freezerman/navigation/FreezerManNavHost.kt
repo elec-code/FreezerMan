@@ -23,6 +23,15 @@ fun FreezerManNavHost(
         composable(route = FreezerManDestination.StockList.route) {
             StockListRoute(
                 stockRepository = stockRepository,
+                onNavigateToCategoryEdit = {
+                    navController.navigate(FreezerManDestination.CategoryEdit.route)
+                },
+                onNavigateToLocationEdit = {
+                    navController.navigate(FreezerManDestination.LocationEdit.route)
+                },
+                onNavigateToAboutApp = {
+                    navController.navigate(FreezerManDestination.About.route)
+                },
             )
         }
 
