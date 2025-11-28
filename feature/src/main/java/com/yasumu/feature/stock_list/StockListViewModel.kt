@@ -1,4 +1,4 @@
-package com.yasumu.feature.stock
+package com.yasumu.feature.stock_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
