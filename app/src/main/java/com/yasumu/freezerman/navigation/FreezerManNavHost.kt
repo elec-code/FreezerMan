@@ -6,6 +6,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.yasumu.core.domain.repository.StockRepository
 import com.yasumu.feature.stock_list.StockListRoute
+import com.yasumu.feature.category_edit.CategoryEditRoute
+import com.yasumu.feature.location_edit.LocationEditRoute
+import com.yasumu.feature.about_app.AboutAppRoute
 
 
 @Composable
@@ -41,8 +44,20 @@ fun FreezerManNavHost(
         //     StockEditRoute(stockId = stockId)
         // }
         //
-        // composable(route = FreezerManDestination.CategoryEdit.route) { ... }
-        // composable(route = FreezerManDestination.LocationEdit.route) { ... }
-        // composable(route = FreezerManDestination.About.route) { ... }
+
+        // ③ カテゴリ編集
+        composable(route = FreezerManDestination.CategoryEdit.route) {
+            CategoryEditRoute()
+        }
+
+        // ④ 保管場所編集
+        composable(route = FreezerManDestination.LocationEdit.route) {
+            LocationEditRoute()
+        }
+
+        // ⑤ About 画面
+        composable(route = FreezerManDestination.About.route) {
+            AboutAppRoute()
+        }
     }
 }
