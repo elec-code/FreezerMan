@@ -1,0 +1,48 @@
+package com.yasumu.freezerman.navigation
+
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.yasumu.core.domain.repository.StockRepository
+import com.yasumu.feature.stock.StockListRoute
+
+
+@Composable
+fun FreezerManNavHost(
+    navController: NavHostController,
+    stockRepository: StockRepository,
+) {
+    NavHost(
+        navController = navController,
+        startDestination = FreezerManDestination.StockList.route,
+    ) {
+        composable(route = FreezerManDestination.StockList.route) {
+            StockListRoute(
+                stockRepository = stockRepository,
+            )
+        }
+
+        // ★今後のための TODO（1-B/1-C 以降で追加）
+        //
+        // composable(route = FreezerManDestination.StockAdd.route) { ... }
+        //
+        // composable(
+        //     route = FreezerManDestination.StockEdit.routeWithArg,
+        //     arguments = listOf(
+        //         navArgument(FreezerManDestination.StockEdit.stockIdArg) {
+        //             type = NavType.LongType
+        //         },
+        //     ),
+        // ) { backStackEntry ->
+        //     val stockId = backStackEntry.arguments
+        //         ?.getLong(FreezerManDestination.StockEdit.stockIdArg)
+        //         ?: error("stockId is required")
+        //     StockEditRoute(stockId = stockId)
+        // }
+        //
+        // composable(route = FreezerManDestination.CategoryEdit.route) { ... }
+        // composable(route = FreezerManDestination.LocationEdit.route) { ... }
+        // composable(route = FreezerManDestination.About.route) { ... }
+    }
+}

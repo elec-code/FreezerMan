@@ -4,27 +4,29 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import com.yasumu.feature.stock.StockListRoute
-import com.yasumu.freezerman.ui.theme.FreezerManTheme
+import androidx.navigation.compose.rememberNavController
+import com.yasumu.core.domain.repository.StockRepository
+import com.yasumu.freezerman.navigation.FreezerManNavHost
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val appContainer = (application as FreezerManApplication).appContainer
         enableEdgeToEdge()
         setContent {
-            FreezerManApp(appContainer)
+            FreezerManApp(stockRepository = appContainer.stockRepository)
         }
     }
 }
 @Composable
-private fun FreezerManApp(appContainer: AppContainer) {
-    FreezerManTheme {
-        Surface {
-            StockListRoute(
-                stockRepository = appContainer.stockRepository,
-            )
-        }
-    }
+fun FreezerManApp(
+    stockRepository: StockRepository,
+) {
+    val navController = rememberNavController()
+
+    FreezerManNavHost(
+        navController = navController,
+        stockRepository = stockRepository,
+    )
 }
