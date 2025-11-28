@@ -46,6 +46,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.yasumu.core.domain.category.CategoryRepository
 import com.yasumu.core.domain.stock.StockRepository
+import androidx.compose.foundation.lazy.rememberLazyListState
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
+import androidx.compose.material.icons.filled.DragHandle
 
 @Composable
 fun CategoryEditRoute(
@@ -125,25 +129,63 @@ fun CategoryEditScreen(
                 }
 
                 else -> {
+                    val lazyListState = rememberLazyListState()
+
+                    val reorderableLazyListState = rememberReorderableLazyListState(
+                        lazyListState = lazyListState,
+                    ) { from, to ->
+                        // ドラッグ中にインデックスが変化したタイミングで ViewModel に通知
+                        onAction(
+                            CategoryEditUiAction.OnReorder(
+                                fromIndex = from.index,
+                                toIndex = to.index,
+                            ),
+                        )
+                    }
+
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
+                        state = lazyListState,
                     ) {
-                        items(uiState.categories) { item ->
-                            CategoryRow(
-                                item = item,
-                                onEditClick = { id ->
-                                    onAction(CategoryEditUiAction.OnEditClick(id))
-                                },
-                                onDeleteClick = { id ->
-                                    onAction(CategoryEditUiAction.OnDeleteRequest(id))
-                                },
-                            )
+                        items(
+                            items = uiState.categories,
+                            key = { it.id.value }, // 並び替えのために安定キーを指定
+                        ) { item ->
+                            ReorderableItem(
+                                state = reorderableLazyListState,
+                                key = item.id.value,
+                            ) {
+                                CategoryRow(
+                                    item = item,
+                                    onEditClick = { id ->
+                                        onAction(CategoryEditUiAction.OnEditClick(id))
+                                    },
+                                    onDeleteClick = { id ->
+                                        onAction(CategoryEditUiAction.OnDeleteRequest(id))
+                                    },
+                                    dragHandle = {
+                                        IconButton(
+                                            modifier = Modifier.draggableHandle(
+                                                // ドロップ完了時に永続化イベントを投げる
+                                                onDragStopped = {
+                                                    onAction(CategoryEditUiAction.OnReorderFinished)
+                                                },
+                                            ),
+                                            onClick = { /* 並び替え用なのでクリック処理は無し */ },
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Filled.DragHandle,
+                                                contentDescription = "並び替え",
+                                            )
+                                        }
+                                    },
+                                )
+                            }
                         }
                     }
-                }
+                }                }
             }
         }
-    }
 
     if (showSheet) {
         CategoryEditSheet(
@@ -199,6 +241,7 @@ private fun CategoryRow(
     onEditClick: (com.yasumu.core.domain.stock.CategoryId) -> Unit,
     onDeleteClick: (com.yasumu.core.domain.stock.CategoryId) -> Unit,
     modifier: Modifier = Modifier,
+    dragHandle: (@Composable () -> Unit)? = null, // ★ 追加
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         ListItem(
@@ -207,6 +250,12 @@ private fun CategoryRow(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    // 並び替えハンドル（あれば先頭に表示）
+                    if (dragHandle != null) {
+                        dragHandle()
+                        Spacer(modifier = Modifier.width(4.dp))
+                    }
+
                     IconButton(onClick = { onEditClick(item.id) }) {
                         Icon(
                             imageVector = Icons.Filled.Edit,
