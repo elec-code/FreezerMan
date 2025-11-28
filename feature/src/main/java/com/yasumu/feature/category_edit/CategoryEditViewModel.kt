@@ -113,6 +113,7 @@ class CategoryEditViewModel(
             isEditingNameError = false,
         )
     }
+
     private fun onSheetConfirmClick() {
         val current = _uiState.value
         val rawName = current.editingCategoryName
@@ -165,10 +166,87 @@ class CategoryEditViewModel(
         )
     }
 
-    private fun onDeleteRequest() { /* 2-F で実装 */ }
-    private fun onDeleteConfirm() { /* 2-F で実装 */ }
-    private fun onDeleteCancel() { /* 2-F で実装 */ }
+    /**
+     * 削除要求（ダイアログを出すための事前確認）
+     *
+     * - editingCategoryId が null の場合は何もしない（Edit モード以外の誤タップ防止）
+     * - DeleteCategoryUseCase から使用件数を取得し、ダイアログ状態を Visible にする
+     */
+    private fun onDeleteRequest() {
+        val targetId = _uiState.value.editingCategoryId ?: return
+
+        viewModelScope.launch {
+            try {
+                val count = deleteCategoryUseCase.getUsageCount(targetId)
+                _uiState.value = _uiState.value.copy(
+                    deleteConfirmDialog = DeleteConfirmDialogState.Visible(
+                        categoryId = targetId,
+                        count = count,
+                    ),
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    userMessage = UiMessage(
+                        id = System.currentTimeMillis(),
+                        message = "カテゴリの使用状況の取得に失敗しました",
+                    ),
+                )
+            }
+        }
+    }
+
+    /**
+     * 削除ダイアログで「削除」確定
+     *
+     * - DeleteConfirmDialogState.Visible から categoryId を取得
+     * - DeleteCategoryUseCase.delete を実行
+     * - 成功時にダイアログとシートを閉じて Snackbar を表示
+     * - 一覧の更新は getCategoriesUseCase の Flow に任せる
+     */
+    private fun onDeleteConfirm() {
+        val dialogState = _uiState.value.deleteConfirmDialog
+        if (dialogState !is DeleteConfirmDialogState.Visible) return
+
+        viewModelScope.launch {
+            try {
+                deleteCategoryUseCase.delete(dialogState.categoryId)
+
+                _uiState.value = _uiState.value.copy(
+                    deleteConfirmDialog = DeleteConfirmDialogState.Hidden,
+                    sheetState = CategoryEditSheetState.Hidden,
+                    editingCategoryId = null,
+                    editingCategoryName = "",
+                    isEditingNameError = false,
+                    userMessage = UiMessage(
+                        id = System.currentTimeMillis(),
+                        message = "カテゴリを削除しました",
+                    ),
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    deleteConfirmDialog = DeleteConfirmDialogState.Hidden,
+                    userMessage = UiMessage(
+                        id = System.currentTimeMillis(),
+                        message = "カテゴリの削除に失敗しました",
+                    ),
+                )
+            }
+        }
+    }
+
+    /**
+     * 削除ダイアログでキャンセル
+     *
+     * - deleteConfirmDialog を Hidden に戻すだけ
+     */
+    private fun onDeleteCancel() {
+        _uiState.value = _uiState.value.copy(
+            deleteConfirmDialog = DeleteConfirmDialogState.Hidden,
+        )
+    }
+
     private fun onReorder(fromIndex: Int, toIndex: Int) { /* 2-H で実装 */ }
+
     private fun onReorderFinished() { /* 2-H で実装 */ }
 }
 

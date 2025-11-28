@@ -2,6 +2,7 @@ package com.yasumu.core.domain.category
 
 import com.yasumu.core.domain.stock.CategoryId
 import com.yasumu.core.domain.stock.StockRepository
+import kotlinx.coroutines.flow.first
 
 class DeleteCategoryUseCase(
     private val categoryRepository: CategoryRepository,
@@ -13,8 +14,8 @@ class DeleteCategoryUseCase(
      * 確認ダイアログの表示可否やメッセージ文言に利用。
      */
     suspend fun getUsageCount(categoryId: CategoryId): Int {
-        // 実装は後続ステップで
-        TODO("implement in later step")
+        val allStocks = stockRepository.getAllStocks().first()
+        return allStocks.count { it.categoryId == categoryId }
     }
 
     /**
@@ -22,7 +23,16 @@ class DeleteCategoryUseCase(
      * - その後に Category を削除
      */
     suspend fun delete(categoryId: CategoryId) {
-        // 実装は後続ステップで
-        TODO("implement in later step")
+        // 1. このカテゴリを使っている Stock の categoryId を null にする
+        val allStocks = stockRepository.getAllStocks().first()
+        val targetStocks = allStocks.filter { it.categoryId == categoryId }
+
+        for (stock in targetStocks) {
+            val cleared = stock.copy(categoryId = null)
+            stockRepository.upsertStock(cleared)
+        }
+
+        // 2. カテゴリ本体を削除
+        categoryRepository.deleteCategory(categoryId)
     }
 }
