@@ -14,20 +14,30 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -65,6 +75,15 @@ fun CategoryEditScreen(
 ) {
     val showSheet = uiState.sheetState != CategoryEditSheetState.Hidden
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // userMessage が来たら Snackbar を表示して消費
+    LaunchedEffect(uiState.userMessage) {
+        val message = uiState.userMessage ?: return@LaunchedEffect
+        snackbarHostState.showSnackbar(message.message)
+        onAction(CategoryEditUiAction.OnMessageShown)
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -82,6 +101,7 @@ fun CategoryEditScreen(
                 )
             }
         },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -107,7 +127,12 @@ fun CategoryEditScreen(
                         modifier = Modifier.fillMaxSize(),
                     ) {
                         items(uiState.categories) { item ->
-                            CategoryRow(item = item)
+                            CategoryRow(
+                                item = item,
+                                onEditClick = { id ->
+                                    onAction(CategoryEditUiAction.OnEditClick(id))
+                                },
+                            )
                         }
                     }
                 }
@@ -116,8 +141,8 @@ fun CategoryEditScreen(
     }
 
     if (showSheet) {
-        DummyCategoryEditSheet(
-            sheetState = uiState.sheetState,
+        CategoryEditSheet(
+            uiState = uiState,
             onAction = onAction,
         )
     }
@@ -126,49 +151,74 @@ fun CategoryEditScreen(
 @Composable
 private fun CategoryRow(
     item: CategoryItemUiState,
+    onEditClick: (com.yasumu.core.domain.stock.CategoryId) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-    ) {
-        Text(text = item.name)
+    Column(modifier = modifier.fillMaxWidth()) {
+        ListItem(
+            headlineContent = { Text(item.name) },
+            trailingContent = {
+                IconButton(onClick = { onEditClick(item.id) }) {
+                    Icon(
+                        imageVector = Icons.Filled.Edit,
+                        contentDescription = "カテゴリ名を編集",
+                    )
+                }
+            },
+        )
+        Divider()
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DummyCategoryEditSheet(
-    sheetState: CategoryEditSheetState,
+private fun CategoryEditSheet(
+    uiState: CategoryEditUiState,
     onAction: (CategoryEditUiAction) -> Unit,
 ) {
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+    )
+
+    val isEditMode = uiState.sheetState is CategoryEditSheetState.Edit
+
     ModalBottomSheet(
-        onDismissRequest = {
-            onAction(CategoryEditUiAction.OnSheetCancelClick)
-        },
+        onDismissRequest = { onAction(CategoryEditUiAction.OnSheetCancelClick) },
+        sheetState = sheetState,
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(horizontal = 16.dp, vertical = 24.dp),
         ) {
-            val title = when (sheetState) {
-                CategoryEditSheetState.Add -> "カテゴリを追加"
-                CategoryEditSheetState.Edit -> "カテゴリを編集"
-                CategoryEditSheetState.Hidden -> ""
-            }
-
             Text(
-                text = title,
+                text = if (isEditMode) "カテゴリを編集" else "カテゴリを追加",
                 style = MaterialTheme.typography.titleMedium,
             )
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            Text(text = "ここに入力 UI が入ります（2-E で実装）")
+            OutlinedTextField(
+                value = uiState.editingCategoryName,
+                onValueChange = { value ->
+                    onAction(CategoryEditUiAction.OnEditingNameChange(value))
+                },
+                label = { Text("カテゴリ名") },
+                singleLine = true,
+                isError = uiState.isEditingNameError,
+                modifier = Modifier.fillMaxWidth(),
+            )
 
-            Spacer(Modifier.height(24.dp))
+            if (uiState.isEditingNameError) {
+                Text(
+                    text = "カテゴリ名を入力してください",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -179,13 +229,15 @@ private fun DummyCategoryEditSheet(
                 ) {
                     Text("キャンセル")
                 }
-                Spacer(Modifier.width(8.dp))
-                TextButton(
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(
                     onClick = { onAction(CategoryEditUiAction.OnSheetConfirmClick) },
                 ) {
-                    Text("OK")
+                    Text("保存")
                 }
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }

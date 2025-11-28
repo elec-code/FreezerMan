@@ -113,7 +113,6 @@ class CategoryEditViewModel(
             isEditingNameError = false,
         )
     }
-
     private fun onSheetConfirmClick() {
         val current = _uiState.value
         val rawName = current.editingCategoryName
@@ -149,9 +148,21 @@ class CategoryEditViewModel(
                     isEditingNameError = true,
                 )
             } catch (e: Exception) {
-                // TODO: 2-E で Snackbar 用の userMessage を設定するなどのエラーハンドリングを追加
+                // 想定外エラーは Snackbar 用メッセージに載せる
+                _uiState.value = _uiState.value.copy(
+                    userMessage = UiMessage(
+                        id = System.currentTimeMillis(),
+                        message = "カテゴリの保存に失敗しました",
+                    ),
+                )
             }
         }
+    }
+
+    private fun onMessageShown() {
+        _uiState.value = _uiState.value.copy(
+            userMessage = null,
+        )
     }
 
     private fun onDeleteRequest() { /* 2-F で実装 */ }
@@ -159,7 +170,6 @@ class CategoryEditViewModel(
     private fun onDeleteCancel() { /* 2-F で実装 */ }
     private fun onReorder(fromIndex: Int, toIndex: Int) { /* 2-H で実装 */ }
     private fun onReorderFinished() { /* 2-H で実装 */ }
-    private fun onMessageShown() { /* 2-F / 2-H で実装 */ }
 }
 
 class CategoryEditViewModelFactory(
