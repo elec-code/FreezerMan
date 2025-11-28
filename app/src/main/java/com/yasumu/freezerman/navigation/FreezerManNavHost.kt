@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.yasumu.core.domain.category.CategoryRepository
 import com.yasumu.core.domain.stock.StockRepository
 import com.yasumu.feature.stock_list.StockListRoute
 import com.yasumu.feature.category_edit.CategoryEditRoute
@@ -15,6 +16,7 @@ import com.yasumu.feature.about_app.AboutAppRoute
 fun FreezerManNavHost(
     navController: NavHostController,
     stockRepository: StockRepository,
+    categoryRepository: CategoryRepository,
 ) {
     NavHost(
         navController = navController,
@@ -56,7 +58,10 @@ fun FreezerManNavHost(
 
         // ③ カテゴリ編集
         composable(route = FreezerManDestination.CategoryEdit.route) {
-            CategoryEditRoute()
+            CategoryEditRoute(
+                categoryRepository = categoryRepository,
+                stockRepository = stockRepository,
+            )
         }
 
         // ④ 保管場所編集
