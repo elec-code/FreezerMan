@@ -47,6 +47,18 @@ class CategoryEditViewModel(
         }
     }
 
+    private fun mapToItemUiStateList(
+        categories: List<com.yasumu.core.domain.category.Category>,
+    ): List<CategoryItemUiState> =
+        categories.map { category ->
+            CategoryItemUiState(
+                id = category.id,
+                name = category.name,
+                // isDragging は並び替え UI 実装時に更新するので、ここでは常に false
+                isDragging = false,
+            )
+        }
+
     private fun onAddClick() { /* ... */ }
     private fun onEditClick(categoryId: CategoryId) { /* ... */ }
     private fun onEditingNameChange(value: String) { /* ... */ }
