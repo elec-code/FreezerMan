@@ -1,12 +1,15 @@
 package com.yasumu.feature.category_edit
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.yasumu.core.domain.category.CategoryRepository
 import com.yasumu.core.domain.category.DeleteCategoryUseCase
 import com.yasumu.core.domain.category.GetCategoriesUseCase
 import com.yasumu.core.domain.category.ReorderCategoriesUseCase
 import com.yasumu.core.domain.category.UpsertCategoryUseCase
 import com.yasumu.core.domain.stock.CategoryId
+import com.yasumu.core.domain.stock.StockRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -69,16 +72,58 @@ class CategoryEditViewModel(
                 isDragging = false,
             )
         }
+    private fun onAddClick() {
+        // 追加モードでボトムシートを開く（2-E で入力・確定ロジックを実装予定）
+        _uiState.value = _uiState.value.copy(
+            sheetState = CategoryEditSheetState.Add,
+            editingCategoryId = null,
+            editingCategoryName = "",
+            isEditingNameError = false,
+        )
+    }
 
-    private fun onAddClick() { /* ... */ }
+    private fun onSheetCancelClick() {
+        // 入力は全部捨ててシートを閉じる
+        _uiState.value = _uiState.value.copy(
+            sheetState = CategoryEditSheetState.Hidden,
+            editingCategoryId = null,
+            editingCategoryName = "",
+            isEditingNameError = false,
+        )
+    }
+
+    // ここは 2-D 以降で本実装予定。2-C の間は「OK押しても何も起きない」でよい。
+    private fun onSheetConfirmClick() {
+        // 2-D で Upsert 処理を実装
+    }
+
     private fun onEditClick(categoryId: CategoryId) { /* ... */ }
     private fun onEditingNameChange(value: String) { /* ... */ }
-    private fun onSheetConfirmClick() { /* ... */ }
-    private fun onSheetCancelClick() { /* ... */ }
     private fun onDeleteRequest() { /* ... */ }
     private fun onDeleteConfirm() { /* ... */ }
     private fun onDeleteCancel() { /* ... */ }
     private fun onReorder(fromIndex: Int, toIndex: Int) { /* ... */ }
     private fun onReorderFinished() { /* ... */ }
     private fun onMessageShown() { /* ... */ }
+}
+
+class CategoryEditViewModelFactory(
+    private val categoryRepository: CategoryRepository,
+    private val stockRepository: StockRepository,
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        val getCategoriesUseCase = GetCategoriesUseCase(categoryRepository)
+        val upsertCategoryUseCase = UpsertCategoryUseCase(categoryRepository)
+        val deleteCategoryUseCase = DeleteCategoryUseCase(categoryRepository, stockRepository)
+        val reorderCategoriesUseCase = ReorderCategoriesUseCase(categoryRepository)
+
+        return CategoryEditViewModel(
+            getCategoriesUseCase = getCategoriesUseCase,
+            upsertCategoryUseCase = upsertCategoryUseCase,
+            deleteCategoryUseCase = deleteCategoryUseCase,
+            reorderCategoriesUseCase = reorderCategoriesUseCase,
+        ) as T
+    }
 }
