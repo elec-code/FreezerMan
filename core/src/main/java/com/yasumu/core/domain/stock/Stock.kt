@@ -1,4 +1,4 @@
-package com.yasumu.core.domain.model
+package com.yasumu.core.domain.stock
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate

@@ -1,8 +1,7 @@
-package com.yasumu.core.domain.repository
+package com.yasumu.core.domain.stock
 
-import com.yasumu.core.domain.model.Stock
-import com.yasumu.core.domain.model.StockId
 import kotlinx.coroutines.flow.Flow
+
 
 /**
  * ストック（在庫）の取得・更新を担当するリポジトリIF。

@@ -1,7 +1,4 @@
-package com.yasumu.core.domain.usecase
-
-import com.yasumu.core.domain.model.Stock
-import com.yasumu.core.domain.repository.StockRepository
+package com.yasumu.core.domain.stock
 
 /**
  * ストックの新規作成・更新を行うユースケース。

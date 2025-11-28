@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.yasumu.core.data.local.database.FreezerDatabase
 import com.yasumu.core.data.local.repository.StockRepositoryImpl
-import com.yasumu.core.domain.repository.StockRepository
+import com.yasumu.core.domain.stock.StockRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

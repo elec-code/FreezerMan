@@ -1,6 +1,6 @@
 package com.yasumu.core.domain.location
 
-import com.yasumu.core.domain.model.LocationId
+import com.yasumu.core.domain.stock.LocationId
 import kotlinx.coroutines.flow.Flow
 
 interface LocationRepository {

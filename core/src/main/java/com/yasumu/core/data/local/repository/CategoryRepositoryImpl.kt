@@ -3,7 +3,7 @@ package com.yasumu.core.data.local.repository
 import com.yasumu.core.data.local.dao.CategoryDao
 import com.yasumu.core.data.local.entity.CategoryEntity
 import com.yasumu.core.domain.category.Category
-import com.yasumu.core.domain.model.CategoryId
+import com.yasumu.core.domain.stock.CategoryId
 import com.yasumu.core.domain.category.CategoryOrder
 import com.yasumu.core.domain.category.CategoryRepository
 import kotlinx.coroutines.flow.Flow

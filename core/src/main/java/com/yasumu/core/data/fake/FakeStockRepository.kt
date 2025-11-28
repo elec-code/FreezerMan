@@ -1,8 +1,8 @@
 package com.yasumu.core.data.fake
 
-import com.yasumu.core.domain.model.Stock
-import com.yasumu.core.domain.model.StockId
-import com.yasumu.core.domain.repository.StockRepository
+import com.yasumu.core.domain.stock.Stock
+import com.yasumu.core.domain.stock.StockId
+import com.yasumu.core.domain.stock.StockRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

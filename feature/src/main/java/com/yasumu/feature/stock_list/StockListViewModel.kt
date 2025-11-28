@@ -3,9 +3,9 @@ package com.yasumu.feature.stock_list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.yasumu.core.domain.model.Stock
-import com.yasumu.core.domain.repository.StockRepository
-import com.yasumu.core.domain.usecase.GetStockListUseCase
+import com.yasumu.core.domain.stock.Stock
+import com.yasumu.core.domain.stock.StockRepository
+import com.yasumu.core.domain.stock.GetStockListUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

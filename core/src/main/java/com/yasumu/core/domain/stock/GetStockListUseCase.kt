@@ -1,7 +1,5 @@
-package com.yasumu.core.domain.usecase
+package com.yasumu.core.domain.stock
 
-import com.yasumu.core.domain.model.Stock
-import com.yasumu.core.domain.repository.StockRepository
 import kotlinx.coroutines.flow.Flow
 
 /**

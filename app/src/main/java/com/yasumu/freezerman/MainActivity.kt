@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.rememberNavController
-import com.yasumu.core.domain.repository.StockRepository
+import com.yasumu.core.domain.stock.StockRepository
 import com.yasumu.freezerman.navigation.FreezerManNavHost
 
 class MainActivity : ComponentActivity() {
