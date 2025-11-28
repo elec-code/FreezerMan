@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.yasumu.core.domain.repository.StockRepository
+import com.yasumu.core.domain.stock.StockRepository
 import com.yasumu.feature.stock_list.StockListRoute
 import com.yasumu.feature.category_edit.CategoryEditRoute
 import com.yasumu.feature.location_edit.LocationEditRoute

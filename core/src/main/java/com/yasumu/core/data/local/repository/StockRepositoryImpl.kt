@@ -2,11 +2,11 @@ package com.yasumu.core.data.local.repository
 
 import com.yasumu.core.data.local.dao.StockDao
 import com.yasumu.core.data.local.entity.StockEntity
-import com.yasumu.core.domain.model.CategoryId
-import com.yasumu.core.domain.model.LocationId
-import com.yasumu.core.domain.model.Stock
-import com.yasumu.core.domain.model.StockId
-import com.yasumu.core.domain.repository.StockRepository
+import com.yasumu.core.domain.stock.CategoryId
+import com.yasumu.core.domain.stock.LocationId
+import com.yasumu.core.domain.stock.Stock
+import com.yasumu.core.domain.stock.StockId
+import com.yasumu.core.domain.stock.StockRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

@@ -1,8 +1,8 @@
 package com.yasumu.freezerman
 
-import com.yasumu.core.domain.model.Stock
-import com.yasumu.core.domain.model.StockId
-import com.yasumu.core.domain.repository.StockRepository
+import com.yasumu.core.domain.stock.Stock
+import com.yasumu.core.domain.stock.StockId
+import com.yasumu.core.domain.stock.StockRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod

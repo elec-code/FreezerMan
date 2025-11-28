@@ -1,7 +1,6 @@
-package com.yasumu.core.domain.repository
+package com.yasumu.core.domain.category
 
-import com.yasumu.core.domain.model.Category
-import com.yasumu.core.domain.model.CategoryId
+import com.yasumu.core.domain.stock.CategoryId
 import kotlinx.coroutines.flow.Flow
 
 interface CategoryRepository {

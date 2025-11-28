@@ -1,7 +1,4 @@
-package com.yasumu.core.domain.usecase
-
-import com.yasumu.core.domain.model.StockId
-import com.yasumu.core.domain.repository.StockRepository
+package com.yasumu.core.domain.stock
 
 class DeleteStockUseCase(
     private val stockRepository: StockRepository,

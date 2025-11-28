@@ -2,10 +2,10 @@ package com.yasumu.core.data.local.repository
 
 import com.yasumu.core.data.local.dao.LocationDao
 import com.yasumu.core.data.local.entity.LocationEntity
-import com.yasumu.core.domain.model.Location
-import com.yasumu.core.domain.model.LocationId
-import com.yasumu.core.domain.model.LocationOrder
-import com.yasumu.core.domain.repository.LocationRepository
+import com.yasumu.core.domain.location.Location
+import com.yasumu.core.domain.stock.LocationId
+import com.yasumu.core.domain.location.LocationOrder
+import com.yasumu.core.domain.location.LocationRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
