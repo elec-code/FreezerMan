@@ -2,7 +2,7 @@
 ## 1.カテゴリ(Category.kt)
 
 ```kotlin
-package com.yasumu.core.domain.model
+package com.yasumu.core.domain.category
 
 @JvmInline
 value class CategoryOrder(val value: Int)
@@ -19,7 +19,7 @@ data class Category(
 
 ## 2.保管場所(.kt)
 ```kotlin
-package com.yasumu.core.domain.model
+package com.yasumu.core.domain.location
 
 @JvmInline
 value class LocationOrder(val value: Int)
@@ -36,7 +36,7 @@ data class Location(
 
 ## 3.ストック(.kt)
 ```
-package com.yasumu.core.domain.model
+package com.yasumu.core.domain.stock
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
