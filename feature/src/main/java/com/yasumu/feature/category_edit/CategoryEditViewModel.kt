@@ -7,6 +7,7 @@ import com.yasumu.core.domain.category.CategoryRepository
 import com.yasumu.core.domain.category.DeleteCategoryUseCase
 import com.yasumu.core.domain.category.GetCategoriesUseCase
 import com.yasumu.core.domain.category.ReorderCategoriesUseCase
+import com.yasumu.core.domain.category.UpsertCategoryCommand
 import com.yasumu.core.domain.category.UpsertCategoryUseCase
 import com.yasumu.core.domain.stock.CategoryId
 import com.yasumu.core.domain.stock.StockRepository
@@ -72,12 +73,33 @@ class CategoryEditViewModel(
                 isDragging = false,
             )
         }
+
     private fun onAddClick() {
-        // 追加モードでボトムシートを開く（2-E で入力・確定ロジックを実装予定）
+        // 追加モードでボトムシートを開く
         _uiState.value = _uiState.value.copy(
             sheetState = CategoryEditSheetState.Add,
             editingCategoryId = null,
             editingCategoryName = "",
+            isEditingNameError = false,
+        )
+    }
+
+    private fun onEditClick(categoryId: CategoryId) {
+        // 編集対象を現在の一覧から探し、ボトムシートを Edit モードで開く
+        val target = _uiState.value.categories.find { it.id == categoryId } ?: return
+
+        _uiState.value = _uiState.value.copy(
+            sheetState = CategoryEditSheetState.Edit,
+            editingCategoryId = categoryId,
+            editingCategoryName = target.name,
+            isEditingNameError = false,
+        )
+    }
+
+    private fun onEditingNameChange(value: String) {
+        // 入力中のカテゴリ名を保持。エラーフラグは一旦リセット。
+        _uiState.value = _uiState.value.copy(
+            editingCategoryName = value,
             isEditingNameError = false,
         )
     }
@@ -92,19 +114,52 @@ class CategoryEditViewModel(
         )
     }
 
-    // ここは 2-D 以降で本実装予定。2-C の間は「OK押しても何も起きない」でよい。
     private fun onSheetConfirmClick() {
-        // 2-D で Upsert 処理を実装
+        val current = _uiState.value
+        val rawName = current.editingCategoryName
+
+        viewModelScope.launch {
+            val trimmed = rawName.trim()
+
+            // 空文字はこの段階で弾いて、UI にエラー状態を通知
+            if (trimmed.isEmpty()) {
+                _uiState.value = current.copy(isEditingNameError = true)
+                return@launch
+            }
+
+            try {
+                val command = UpsertCategoryCommand(
+                    id = current.editingCategoryId,
+                    name = trimmed,
+                )
+
+                upsertCategoryUseCase(command)
+
+                // 成功時: シートを閉じる
+                // 一覧の再読み込みは Flow(getCategoriesUseCase) に任せる
+                _uiState.value = _uiState.value.copy(
+                    sheetState = CategoryEditSheetState.Hidden,
+                    editingCategoryId = null,
+                    editingCategoryName = "",
+                    isEditingNameError = false,
+                )
+            } catch (e: IllegalArgumentException) {
+                // バリデーションエラーなど → ひとまず名前入力エラーとして扱う
+                _uiState.value = _uiState.value.copy(
+                    isEditingNameError = true,
+                )
+            } catch (e: Exception) {
+                // TODO: 2-E で Snackbar 用の userMessage を設定するなどのエラーハンドリングを追加
+            }
+        }
     }
 
-    private fun onEditClick(categoryId: CategoryId) { /* ... */ }
-    private fun onEditingNameChange(value: String) { /* ... */ }
-    private fun onDeleteRequest() { /* ... */ }
-    private fun onDeleteConfirm() { /* ... */ }
-    private fun onDeleteCancel() { /* ... */ }
-    private fun onReorder(fromIndex: Int, toIndex: Int) { /* ... */ }
-    private fun onReorderFinished() { /* ... */ }
-    private fun onMessageShown() { /* ... */ }
+    private fun onDeleteRequest() { /* 2-F で実装 */ }
+    private fun onDeleteConfirm() { /* 2-F で実装 */ }
+    private fun onDeleteCancel() { /* 2-F で実装 */ }
+    private fun onReorder(fromIndex: Int, toIndex: Int) { /* 2-H で実装 */ }
+    private fun onReorderFinished() { /* 2-H で実装 */ }
+    private fun onMessageShown() { /* 2-F / 2-H で実装 */ }
 }
 
 class CategoryEditViewModelFactory(
