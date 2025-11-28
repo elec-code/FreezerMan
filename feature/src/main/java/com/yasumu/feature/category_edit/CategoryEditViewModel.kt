@@ -41,9 +41,20 @@ class CategoryEditViewModel(
     }
 
     private fun onAppear() {
+        if (hasStartedCollecting) return
+        hasStartedCollecting = true
+
         viewModelScope.launch {
-            // GetCategoriesUseCase の collect で uiState.categories を更新
-            // 実装は 2-B 以降
+            // 初回は isLoading = true のまま Flow を購読
+            getCategoriesUseCase().collect { categories ->
+                val items = mapToItemUiStateList(categories)
+
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    categories = items,
+                    showEmptyMessage = items.isEmpty(),
+                )
+            }
         }
     }
 
