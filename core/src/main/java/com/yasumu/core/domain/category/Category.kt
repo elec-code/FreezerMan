@@ -1,4 +1,6 @@
-package com.yasumu.core.domain.model
+package com.yasumu.core.domain.category
+
+import com.yasumu.core.domain.model.CategoryId
 
 @JvmInline
 value class CategoryOrder(val value: Int)
