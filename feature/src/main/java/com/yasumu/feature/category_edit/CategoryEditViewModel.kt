@@ -35,7 +35,7 @@ class CategoryEditViewModel(
             is CategoryEditUiAction.OnEditingNameChange -> onEditingNameChange(action.value)
             is CategoryEditUiAction.OnSheetConfirmClick -> onSheetConfirmClick()
             is CategoryEditUiAction.OnSheetCancelClick -> onSheetCancelClick()
-            is CategoryEditUiAction.OnDeleteRequest -> onDeleteRequest()
+            is CategoryEditUiAction.OnDeleteRequest -> onDeleteRequest(action.categoryId)
             is CategoryEditUiAction.OnDeleteConfirm -> onDeleteConfirm()
             is CategoryEditUiAction.OnDeleteCancel -> onDeleteCancel()
             is CategoryEditUiAction.OnReorder -> onReorder(action.fromIndex, action.toIndex)
@@ -169,18 +169,17 @@ class CategoryEditViewModel(
     /**
      * 削除要求（ダイアログを出すための事前確認）
      *
-     * - editingCategoryId が null の場合は何もしない（Edit モード以外の誤タップ防止）
-     * - DeleteCategoryUseCase から使用件数を取得し、ダイアログ状態を Visible にする
+     * - categoryId を指定して DeleteCategoryUseCase から使用件数を取得
+     * - ダイアログ状態を Visible にする
      */
-    private fun onDeleteRequest() {
-        val targetId = _uiState.value.editingCategoryId ?: return
-
+    private fun onDeleteRequest(categoryId: CategoryId) {
         viewModelScope.launch {
             try {
-                val count = deleteCategoryUseCase.getUsageCount(targetId)
+                val count = deleteCategoryUseCase.getUsageCount(categoryId)
                 _uiState.value = _uiState.value.copy(
+                    editingCategoryId = categoryId,
                     deleteConfirmDialog = DeleteConfirmDialogState.Visible(
-                        categoryId = targetId,
+                        categoryId = categoryId,
                         count = count,
                     ),
                 )

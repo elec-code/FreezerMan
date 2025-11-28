@@ -14,12 +14,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -132,6 +134,9 @@ fun CategoryEditScreen(
                                 onEditClick = { id ->
                                     onAction(CategoryEditUiAction.OnEditClick(id))
                                 },
+                                onDeleteClick = { id ->
+                                    onAction(CategoryEditUiAction.OnDeleteRequest(id))
+                                },
                             )
                         }
                     }
@@ -146,27 +151,79 @@ fun CategoryEditScreen(
             onAction = onAction,
         )
     }
+
+    // ★ 削除確認ダイアログ
+    val deleteDialogState = uiState.deleteConfirmDialog
+    if (deleteDialogState is DeleteConfirmDialogState.Visible) {
+        DeleteConfirmDialog(
+            count = deleteDialogState.count,
+            onConfirm = { onAction(CategoryEditUiAction.OnDeleteConfirm) },
+            onCancel = { onAction(CategoryEditUiAction.OnDeleteCancel) },
+        )
+    }
+}
+
+@Composable
+private fun DeleteConfirmDialog(
+    count: Int,
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit,
+) {
+    val message =
+        if (count > 0) {
+            "このカテゴリを削除すると、$count 件のストックのカテゴリが未設定になります。削除してもよろしいですか？"
+        } else {
+            "このカテゴリを削除しますか？"
+        }
+
+    AlertDialog(
+        onDismissRequest = onCancel,
+        title = { Text("カテゴリを削除") },
+        text = { Text(message) },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("削除")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onCancel) {
+                Text("キャンセル")
+            }
+        },
+    )
 }
 
 @Composable
 private fun CategoryRow(
     item: CategoryItemUiState,
     onEditClick: (com.yasumu.core.domain.stock.CategoryId) -> Unit,
+    onDeleteClick: (com.yasumu.core.domain.stock.CategoryId) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         ListItem(
             headlineContent = { Text(item.name) },
             trailingContent = {
-                IconButton(onClick = { onEditClick(item.id) }) {
-                    Icon(
-                        imageVector = Icons.Filled.Edit,
-                        contentDescription = "カテゴリ名を編集",
-                    )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    IconButton(onClick = { onEditClick(item.id) }) {
+                        Icon(
+                            imageVector = Icons.Filled.Edit,
+                            contentDescription = "カテゴリ名を編集",
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(4.dp))
+                    IconButton(onClick = { onDeleteClick(item.id) }) {
+                        Icon(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = "カテゴリを削除",
+                        )
+                    }
                 }
             },
         )
-        Divider()
+        HorizontalDivider()
     }
 }
 
@@ -234,6 +291,27 @@ private fun CategoryEditSheet(
                     onClick = { onAction(CategoryEditUiAction.OnSheetConfirmClick) },
                 ) {
                     Text("保存")
+                }
+            }
+
+            // ★ 編集モードのときだけ「削除」ボタンを表示
+            if (isEditMode) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                ) {
+                    TextButton(
+                        onClick = {
+                            val id = uiState.editingCategoryId ?: return@TextButton
+                            onAction(CategoryEditUiAction.OnDeleteRequest(id))
+                        },
+                    ) {
+                        Text(
+                            text = "削除",
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    }
                 }
             }
 

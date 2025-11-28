@@ -21,8 +21,8 @@ sealed interface CategoryEditUiAction {
     // ボトムシートのキャンセルボタン
     data object OnSheetCancelClick : CategoryEditUiAction
 
-    // 削除要求（シート内の削除ボタンタップ）→ 確認ダイアログ表示
-    data object OnDeleteRequest : CategoryEditUiAction
+    // 削除要求（カテゴリ行 or シート内の削除ボタン）→ 確認ダイアログ表示
+    data class OnDeleteRequest(val categoryId: CategoryId) : CategoryEditUiAction
 
     // 削除ダイアログで「削除」確定
     data object OnDeleteConfirm : CategoryEditUiAction
