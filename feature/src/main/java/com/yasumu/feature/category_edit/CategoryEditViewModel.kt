@@ -244,9 +244,41 @@ class CategoryEditViewModel(
         )
     }
 
-    private fun onReorder(fromIndex: Int, toIndex: Int) { /* 2-H で実装 */ }
+    private fun onReorder(fromIndex: Int, toIndex: Int) {
+        val current = _uiState.value.categories
+        if (current.isEmpty()) return
 
-    private fun onReorderFinished() { /* 2-H で実装 */ }
+        // 範囲外は無視
+        if (fromIndex !in current.indices || toIndex !in current.indices) return
+        if (fromIndex == toIndex) return
+
+        val mutable = current.toMutableList()
+        val item = mutable.removeAt(fromIndex)
+        mutable.add(toIndex, item)
+
+        _uiState.value = _uiState.value.copy(
+            categories = mutable,
+        )
+    }
+
+    private fun onReorderFinished() {
+        val ids = _uiState.value.categories.map { it.id }
+
+        viewModelScope.launch {
+            try {
+                reorderCategoriesUseCase(ids)
+            } catch (e: Exception) {
+                // 永続化に失敗した場合は Snackbar で通知
+                _uiState.value = _uiState.value.copy(
+                    userMessage = UiMessage(
+                        id = System.currentTimeMillis(),
+                        message = "カテゴリの並び替えに失敗しました",
+                    ),
+                )
+            }
+        }
+    }
+
 }
 
 class CategoryEditViewModelFactory(
