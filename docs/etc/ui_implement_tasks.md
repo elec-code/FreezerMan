@@ -4,12 +4,12 @@
 
 ### 1-A: ルーティング設計
 - `FreezerManDestination` を定義
-    - `StockList`, `StockAdd`, `StockEdit/{stockId}`, `CategoryEdit`, `LocationEdit`, `About`
+    - `StockList`, `StockAdd`, `StockEdit/{stockId}`, `CategoryEdit`, `LocationEdit`, `AboutApp`
 - Route 文字列と引数仕様を確定
 - NavHost のルート名だけ差し替え（Screen 本体は触らない）
 
 ### 1-B: 空 Screen 群の作成
-- `CategoryEditScreen` / `LocationEditScreen` / `AboutScreen` など
+- `CategoryEditScreen` / `LocationEditScreen` / `AboutAppScreen` など
     - 中身は `Text("WIP")`
 - NavHost へ結線
 - ViewModel / UseCase / DI には触らない
@@ -19,7 +19,7 @@
     - OverflowMenu →
         - CategoryEdit
         - LocationEdit
-        - About  
+        - AboutApp
           へ navigate
 - ④⑤⑥ はまだ WIP のままで OK
 
@@ -124,8 +124,8 @@
 - ライセンス一覧の取得方法を決定（手書き/JSON/OSS Plugin など）
 
 ### UI
-- `AboutViewModel`
-- `AboutScreen`
+- `AboutAppViewModel`
+- `AboutAppScreen`
     - アイコン
     - バージョン
     - ライセンス一覧
