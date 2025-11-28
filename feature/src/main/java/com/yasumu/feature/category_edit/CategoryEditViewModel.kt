@@ -21,6 +21,8 @@ class CategoryEditViewModel(
     private val _uiState = MutableStateFlow(CategoryEditUiState())
     val uiState: StateFlow<CategoryEditUiState> = _uiState
 
+    private var hasStartedCollecting = false
+
     fun onAction(action: CategoryEditUiAction) {
         when (action) {
             is CategoryEditUiAction.OnAppear -> onAppear()
